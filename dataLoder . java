@@ -1,0 +1,68 @@
+package com.quiz.onlinequizapplication;
+import com.quiz.onlinequizapplication.model.Question;
+import com.quiz.onlinequizapplication.repository.QuestionRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import java.util.Arrays;
+import java.util.List;
+/**
+ * DataLoader seeds 5 sample multiple-choice questions into the database on application startup if empty.
+ */
+@Component
+public class DataLoader implements CommandLineRunner {
+    private final QuestionRepository questionRepository;
+    public DataLoader(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
+    }
+    @Override
+    public void run(String... args) throws Exception {
+        if (questionRepository.count() == 0) {
+            List<Question> sampleQuestions = Arrays.asList(
+                new Question(
+                    "Which annotation is used to mark a class as a Spring REST Controller?",
+                    "@Controller",
+                    "@RestController",
+                    "@Service",
+                    "@Repository",
+                    "B"
+                ),
+                new Question(
+                    "What is the default port on which an embedded Spring Boot Tomcat server runs?",
+                    "8080",
+                    "3306",
+                    "8000",
+                    "5000",
+                    "A"
+                ),
+                new Question(
+                    "Which interface in Spring Data JPA provides standard CRUD operations out of the box?",
+                    "CrudService",
+                    "JpaRepository",
+                    "EntityManager",
+                    "DataRepository",
+                    "B"
+                ),
+                new Question(
+                    "Which annotation is used for automatic dependency injection in Spring Boot?",
+                    "@InjectBean",
+                    "@Autowired",
+                    "@ResourceBean",
+                    "@Connect",
+                    "B"
+                ),
+                new Question(
+                    "Which configuration file is commonly used to specify database credentials in Spring Boot?",
+                    "config.xml",
+                    "settings.json",
+                    "application.properties",
+                    "manifest.mf",
+                    "C"
+                )
+            );
+            questionRepository.saveAll(sampleQuestions);
+            System.out.println(">>> DataLoader: Successfully seeded " + sampleQuestions.size() + " sample questions into database.");
+        } else {
+            System.out.println(">>> DataLoader: Questions table already contains data (" + questionRepository.count() + " items). Skipping seed.");
+        }
+    }
+}
