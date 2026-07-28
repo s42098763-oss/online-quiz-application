@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Quiz - Online Quiz Application</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- App Header Navbar -->
+    <header class="app-header">
+        <a href="/" class="brand">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-title">Quiz Dashboard</div>
+        </a>
+        <div class="nav-links">
+            <span style="font-size: 0.9rem; color: var(--text-muted); padding: 0.5rem 1rem;">
+                Candidate: <strong th:text="${studentName}" style="color: var(--text-main);">Student</strong>
+            </span>
+        </div>
+    </header>
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="card">
+            <!-- Empty Question Set Safeguard -->
+            <div th:if="${#lists.isEmpty(questions)}" class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h2>No Questions Available</h2>
+                <p style="margin-bottom: 1.5rem;">There are currently no questions available in the quiz database.</p>
+                <a href="/" class="btn btn-primary" style="display: inline-flex; width: auto;">Return to Home</a>
+            </div>
+            <!-- Quiz Questions Form -->
+            <form th:unless="${#lists.isEmpty(questions)}" th:action="@{/submit}" method="post">
+                
+                <!-- Pass studentName back in form submit -->
+                <input type="hidden" name="studentName" th:value="${studentName}">
+                <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem;">
+                    <div>
+                        <h2 style="font-size: 1.5rem; font-weight: 800;">Multiple Choice Questions</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Select the single best answer for each question below.</p>
+                    </div>
+                    <span class="pill-badge pill-success" th:text="${totalQuestions} + ' Questions'">5 Questions</span>
+                </div>
+                <!-- Loop through Questions -->
+                <div th:each="question, iterStat : ${questions}" class="question-card">
+                    <div class="question-number" th:text="'Question ' + ${iterStat.count} + ' of ' + ${totalQuestions}">Question 1</div>
+                    <div class="question-title" th:text="${question.questionText}">Question Text Here</div>
+                    <div class="options-grid">
+                        <!-- Option A -->
+                        <label class="option-label">
+                            <input type="radio" 
+                                   th:name="'q_' + ${question.id}" 
+                                   value="A" 
+                                   class="option-input" 
+                                   required>
+                            <span class="option-tag">A</span>
+                            <span class="option-text" th:text="${question.optionA}">Option A</span>
+                        </label>
+                        <!-- Option B -->
+                        <label class="option-label">
+                            <input type="radio" 
+                                   th:name="'q_' + ${question.id}" 
+                                   value="B" 
+                                   class="option-input">
+                            <span class="option-tag">B</span>
+                            <span class="option-text" th:text="${question.optionB}">Option B</span>
+                        </label>
+                        <!-- Option C -->
+                        <label class="option-label">
+                            <input type="radio" 
+                                   th:name="'q_' + ${question.id}" 
+                                   value="C" 
+                                   class="option-input">
+                            <span class="option-tag">C</span>
+                            <span class="option-text" th:text="${question.optionC}">Option C</span>
+                        </label>
+                        <!-- Option D -->
+                        <label class="option-label">
+                            <input type="radio" 
+                                   th:name="'q_' + ${question.id}" 
+                                   value="D" 
+                                   class="option-input">
+                            <span class="option-tag">D</span>
+                            <span class="option-text" th:text="${question.optionD}">Option D</span>
+                        </label>
+                    </div>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">
+                        ✅ Submit Answers &amp; See Results
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
