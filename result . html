@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results - Online Quiz Application</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- App Header Navbar -->
+    <header class="app-header">
+        <a href="/" class="brand">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-title">Quiz Dashboard</div>
+        </a>
+        <div class="nav-links">
+            <a href="/dashboard" class="nav-btn">
+                🏆 Leaderboard
+            </a>
+        </div>
+    </header>
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="card">
+            
+            <div style="text-align: center;">
+                <span class="pill-badge pill-success" style="margin-bottom: 1rem;">Quiz Completed</span>
+                <h1 style="font-size: 2rem; font-weight: 800;">Great Job, <span th:text="${studentName}">Student</span>!</h1>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">Here is your performance summary for this attempt.</p>
+            </div>
+            <!-- Score Circle Gauge -->
+            <div class="score-badge-container">
+                <div class="score-circle">
+                    <div class="score-number" th:text="${score} + '/' + ${totalQuestions}">4/5</div>
+                    <div class="score-percentage" th:text="${percentage} + '%'">80%</div>
+                </div>
+                
+                <div th:if="${percentage >= 70.0}">
+                    <span style="color: var(--success); font-weight: 700; font-size: 1.1rem;">🎉 Excellent Performance!</span>
+                </div>
+                <div th:if="${percentage >= 50.0 and percentage < 70.0}">
+                    <span style="color: var(--warning); font-weight: 700; font-size: 1.1rem;">👍 Good Effort! Keep Learning.</span>
+                </div>
+                <div th:if="${percentage < 50.0}">
+                    <span style="color: var(--danger); font-weight: 700; font-size: 1.1rem;">💪 Don't give up! Try again to improve your score.</span>
+                </div>
+            </div>
+            <!-- Breakdown Accordion/List -->
+            <div style="margin-top: 2rem;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem;">Submission Review</h3>
+                <div th:each="item, iterStat : ${breakdown}" 
+                     class="breakdown-card" 
+                     th:classappend="${item.isCorrect} ? 'correct' : 'incorrect'">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <strong th:text="'Q' + ${iterStat.count} + ': ' + ${item.question.questionText}">Question text</strong>
+                        <span th:if="${item.isCorrect}" class="pill-badge pill-success">Correct</span>
+                        <span th:unless="${item.isCorrect}" class="pill-badge pill-danger">Incorrect</span>
+                    </div>
+                    <div style="font-size: 0.88rem; color: var(--text-muted); display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+                        <span>Your Answer: <strong th:text="${item.selectedOption}" th:style="${item.isCorrect} ? 'color: var(--success);' : 'color: var(--danger);'">A</strong></span>
+                        <span>Correct Answer: <strong style="color: var(--success);" th:text="${item.correctOption}">B</strong></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                <a href="/" class="btn btn-secondary" style="flex: 1;">
+                    🔄 Take Another Quiz
+                </a>
+                <a href="/dashboard" class="btn btn-primary" style="flex: 1;">
+                    🏆 View Leaderboard
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
