@@ -1,0 +1,104 @@
+package com.quiz.onlinequizapplication.controller;
+import com.quiz.onlinequizapplication.model.Question;
+import com.quiz.onlinequizapplication.model.Result;
+import com.quiz.onlinequizapplication.repository.QuestionRepository;
+import com.quiz.onlinequizapplication.repository.ResultRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+/**
+ * Controller managing web routes for the Online Quiz Application:
+ * - GET  /           -> Home view (Student name entry)
+ * - POST /quiz       -> Loads questions & presents Quiz form
+ * - POST /submit     -> Grades answers, persists Result, presents Score summary
+ * - GET  /dashboard  -> Renders Leaderboard sorted by percentage descending
+ */
+@Controller
+public class QuizController {
+    private final QuestionRepository questionRepository;
+    private final ResultRepository resultRepository;
+    public QuizController(QuestionRepository questionRepository, ResultRepository resultRepository) {
+        this.questionRepository = questionRepository;
+        this.resultRepository = resultRepository;
+    }
+    /**
+     * GET / -> Home page with student name form
+     */
+    @GetMapping("/")
+    public String index(Model model) {
+        return "index";
+    }
+    /**
+     * POST /quiz -> Starts the quiz for the registered student name
+     */
+    @PostMapping("/quiz")
+    public String startQuiz(@RequestParam(name = "studentName", defaultValue = "Student") String studentName, Model model) {
+        if (studentName == null || studentName.trim().isEmpty()) {
+            studentName = "Student";
+        }
+        
+        List<Question> questions = questionRepository.findAll();
+        
+        model.addAttribute("studentName", studentName.trim());
+        model.addAttribute("questions", questions);
+        model.addAttribute("totalQuestions", questions.size());
+        return "quiz";
+    }
+    /**
+     * POST /submit -> Evaluates quiz submission, saves result, and displays score page
+     */
+    @PostMapping("/submit")
+    public String submitQuiz(@RequestParam Map<String, String> allParams, Model model) {
+        String studentName = allParams.getOrDefault("studentName", "Student");
+        if (studentName == null || studentName.trim().isEmpty()) {
+            studentName = "Student";
+        }
+        studentName = studentName.trim();
+        List<Question> questions = questionRepository.findAll();
+        int score = 0;
+        int totalQuestions = questions.size();
+        
+        List<Map<String, Object>> breakdownList = new ArrayList<>();
+        for (Question q : questions) {
+            String selectedOption = allParams.get("q_" + q.getId());
+            boolean isCorrect = false;
+            if (selectedOption != null && selectedOption.equalsIgnoreCase(q.getCorrectOption())) {
+                score++;
+                isCorrect = true;
+            }
+            Map<String, Object> item = new HashMap<>();
+            item.put("question", q);
+            item.put("selectedOption", selectedOption != null ? selectedOption : "Not Answered");
+            item.put("correctOption", q.getCorrectOption());
+            item.put("isCorrect", isCorrect);
+            breakdownList.add(item);
+        }
+        double percentage = totalQuestions > 0 ? ((double) score / totalQuestions) * 100.0 : 0.0;
+        percentage = Math.round(percentage * 10.0) / 10.0;
+        // Save result using safe JPA repository
+        Result result = new Result(studentName, score, totalQuestions, percentage);
+        resultRepository.save(result);
+        // Pass attributes to result template
+        model.addAttribute("studentName", studentName);
+        model.addAttribute("score", score);
+        model.addAttribute("totalQuestions", totalQuestions);
+        model.addAttribute("percentage", percentage);
+        model.addAttribute("breakdown", breakdownList);
+        return "result";
+    }
+    /**
+     * GET /dashboard -> Leaderboard showing student results ordered by percentage descending
+     */
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        List<Result> leaderboard = resultRepository.findAllByOrderByPercentageDesc();
+        model.addAttribute("leaderboard", leaderboard);
+        return "dashboard";
+    }
+}
