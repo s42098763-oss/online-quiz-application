@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz Application Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- App Header Navbar -->
+    <header class="app-header">
+        <a href="/" class="brand">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-title">Quiz Dashboard</div>
+        </a>
+        <div class="nav-links">
+            <a href="/dashboard" class="nav-btn">
+                🏆 Leaderboard
+            </a>
+        </div>
+    </header>
+    <!-- Main Welcome Card -->
+    <main class="main-container">
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Welcome to the Knowledge Quiz!</h1>
+                <p style="color: var(--text-muted);">Test your Java &amp; Spring Boot expertise and claim your spot on the leaderboard.</p>
+            </div>
+            <form th:action="@{/quiz}" method="post">
+                <div class="form-group">
+                    <label for="studentName" class="form-label">Enter Your Full Name</label>
+                    <input type="text" 
+                           id="studentName" 
+                           name="studentName" 
+                           class="form-input" 
+                           placeholder="e.g. Alex Mercer" 
+                           required 
+                           autocomplete="name">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    🚀 Start Quiz Now
+                </button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
