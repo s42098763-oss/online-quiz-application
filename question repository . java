@@ -1,0 +1,11 @@
+package com.quiz.onlinequizapplication.repository;
+import com.quiz.onlinequizapplication.model.Question;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+/**
+ * Spring Data JPA Repository for Question entities.
+ * Uses parameterized prepared statements under the hood to ensure SQL safety.
+ */
+@Repository
+public interface QuestionRepository extends JpaRepository<Question, Long> {
+}
