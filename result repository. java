@@ -1,0 +1,16 @@
+package com.quiz.onlinequizapplication.repository;
+import com.quiz.onlinequizapplication.model.Result;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+/**
+ * Spring Data JPA Repository for Result entities.
+ * Includes query method to fetch leaderboard sorted by percentage descending.
+ */
+@Repository
+public interface ResultRepository extends JpaRepository<Result, Long> {
+    /**
+     * Retrieve all student results ordered by percentage in descending order for leaderboard display.
+     */
+    List<Result> findAllByOrderByPercentageDesc();
+}
